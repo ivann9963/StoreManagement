@@ -1,6 +1,7 @@
 package com.example.project.controller;
 
 import com.example.project.model.Cashier;
+import com.example.project.model.Goods;
 import com.example.project.model.Receipt;
 import com.example.project.model.Shop;
 import com.example.project.service.ReceiptService;
@@ -40,6 +41,9 @@ public class ShopController {
         shopService.deleteShopById(shopId);
     }
 
-    @PostMapping("/{shopId}")
+    @PostMapping("/{shopId}/cashier")
     public void addCashier(@PathVariable UUID shopId, @RequestBody Cashier cashier) throws Exception { shopService.addCashier(shopId, cashier);}
+
+    @PostMapping("/{shopId}/goods")
+    public void addGoods(@PathVariable UUID shopId, @RequestBody Goods goods) throws Exception { shopService.addGoods(shopId, goods); }
 }

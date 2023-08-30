@@ -1,6 +1,7 @@
 package com.example.project.service;
 
 import com.example.project.model.Cashier;
+import com.example.project.model.Goods;
 import com.example.project.model.Shop;
 
 import java.util.Optional;
@@ -15,4 +16,6 @@ public interface ShopService {
     void deleteShopById(UUID shopId);
 
     void addCashier(UUID shopId, Cashier cashier) throws Exception;
+
+    void addGoods(UUID shopId, Goods goods) throws Exception;
 }
