@@ -58,4 +58,7 @@ public class Goods {
     @JoinColumn(name = "shopId")
     private Shop shop;
 
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private List<Receipt> receipts;
+
 }

@@ -41,9 +41,12 @@ public class ShopController {
         shopService.deleteShopById(shopId);
     }
 
-    @PostMapping("/{shopId}/cashier")
-    public void addCashier(@PathVariable UUID shopId, @RequestBody Cashier cashier) throws Exception { shopService.addCashier(shopId, cashier);}
+    @PostMapping("/{shopId}/cashier/{cashierId}")
+    public void addCashier(@PathVariable UUID shopId, @PathVariable UUID cashierId) throws Exception { shopService.addCashier(shopId, cashierId);}
 
-    @PostMapping("/{shopId}/goods")
-    public void addGoods(@PathVariable UUID shopId, @RequestBody Goods goods) throws Exception { shopService.addGoods(shopId, goods); }
+    @PostMapping("/{shopId}/goods/{goodsId}")
+    public void addGoods(@PathVariable UUID shopId, @PathVariable UUID goodsId) throws Exception { shopService.addGoods(shopId, goodsId); }
+
+    @PostMapping("/{shopId}/receipt/{receiptId}")
+    public void addReceipt(@PathVariable UUID shopId, @PathVariable UUID receiptId) throws Exception { shopService.addReceipt(shopId, receiptId); }
 }

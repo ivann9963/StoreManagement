@@ -6,6 +6,7 @@ import com.example.project.model.Receipt;
 import com.example.project.model.Shop;
 import com.example.project.repository.CashierRepository;
 import com.example.project.repository.GoodsRepository;
+import com.example.project.repository.ReceiptRepository;
 import com.example.project.repository.ShopRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,11 +24,15 @@ public class ShopServiceImpl implements ShopService {
 
     private final GoodsRepository goodsRepository;
 
+    private final ReceiptRepository receiptRepository;
+
     @Autowired
-    public ShopServiceImpl(ShopRepository shopRepository, CashierRepository cashierRepository, GoodsRepository goodsRepository) {
+    public ShopServiceImpl(ShopRepository shopRepository, CashierRepository cashierRepository,
+                           GoodsRepository goodsRepository, ReceiptRepository receiptRepository) {
         this.shopRepository = shopRepository;
         this.cashierRepository = cashierRepository;
         this.goodsRepository = goodsRepository;
+        this.receiptRepository = receiptRepository;
     }
 
     @Override
@@ -61,12 +66,17 @@ public class ShopServiceImpl implements ShopService {
     }
 
     @Override
-    public void addCashier(UUID shopId, Cashier cashier) throws Exception {
+    public void addCashier(UUID shopId, UUID cashierId) throws Exception {
         try{
             Shop existingShop = shopRepository.findById(shopId).get();
-            cashier.setShop(existingShop);
-            cashierRepository.save(cashier);
-            existingShop.getCashiers().add(cashier);
+            Cashier cashier = cashierRepository.findById(cashierId).get();
+            if(cashier != null ){
+                cashier.setShop(existingShop);
+                cashierRepository.save(cashier);
+                existingShop.getCashiers().add(cashier);
+            } else {
+                throw new Exception("Cashier with the provided id does not exist!");
+            }
             shopRepository.save(existingShop);
 
 
@@ -76,14 +86,37 @@ public class ShopServiceImpl implements ShopService {
     }
 
     @Override
-    public void addGoods(UUID shopId, Goods goods) throws Exception {
+    public void addGoods(UUID shopId, UUID goodsId) throws Exception {
         try{
             Shop existingShop = shopRepository.findById(shopId).get();
-            goods.setShop(existingShop);
-            goodsRepository.save(goods);
-            existingShop.getGoods().add(goods);
+            Goods goods = goodsRepository.findById(goodsId).get();
+            if(goods != null){
+                goods.setShop(existingShop);
+                goodsRepository.save(goods);
+                existingShop.getGoods().add(goods);
+            } else {
+                throw new Exception("Goods with the provided id does not exist!");
+            }
             shopRepository.save(existingShop);
 
+        } catch (Exception e) {
+            throw new Exception("Error adding the goods with the provided id!");
+        }
+    }
+
+    @Override
+    public void addReceipt(UUID shopId, UUID receiptId) throws Exception {
+        try{
+            Shop existingShop = shopRepository.findById(shopId).get();
+            Receipt receipt = receiptRepository.findById(receiptId).get();
+            if(receipt != null){
+                receipt.setShop(existingShop);
+                receiptRepository.save(receipt);
+                existingShop.getReceipts().add(receipt);
+            } else {
+                throw new Exception("Receipt with the provided id does not exist!");
+            }
+            shopRepository.save(existingShop);
         } catch (Exception e) {
             throw new Exception("Error adding the goods with the provided id!");
         }

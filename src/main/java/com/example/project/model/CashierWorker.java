@@ -38,7 +38,7 @@ public class CashierWorker {
 
     //@Column(nullable = false)
     @OneToMany(cascade = CascadeType.ALL)
-    private Set<Receipt> receipts = new HashSet<>();
+    private Set<Receipt> receipts;
 
     @OneToOne(fetch = FetchType.EAGER)
     private Cashier cashier;

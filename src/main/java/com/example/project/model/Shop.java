@@ -29,7 +29,10 @@ public class Shop {
 
     private String name;
 
-    @OneToMany(fetch = FetchType.EAGER)
+    @OneToMany(/*mappedBy = "shop",*/ cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinTable(name = "shop_cashierWorkers",
+            joinColumns = @JoinColumn(name = "shopId"),
+            inverseJoinColumns = @JoinColumn(name = "cashierWorkerId"))
     private List<CashierWorker> cashierWorkers;
 
     @OneToMany(/*mappedBy = "shop",*/ cascade = CascadeType.ALL, orphanRemoval = true)
@@ -39,7 +42,7 @@ public class Shop {
     private List<Goods> goods = new ArrayList<>();
 
     @OneToMany(/*mappedBy = "shop",*/ cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinTable(name = "shop_cashiers",
+    @JoinTable(name = "shop_receipts",
             joinColumns = @JoinColumn(name = "shopId"),
             inverseJoinColumns = @JoinColumn(name = "receiptId"))
     private List<Receipt> receipts = new ArrayList<>();
