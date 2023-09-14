@@ -13,7 +13,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -61,6 +63,19 @@ public class ShopControllerTest {
         mockMvc.perform(delete("/shop/1")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
+    }
+    @Test
+    public void testSumCashierWorkersSalaries() throws Exception {
+        // Given
+        Long shopId = 1L;
+        when(shopService.sumCashierWorkersSalaries(shopId)).thenReturn(1000D); // Mocking to return a sum of 1000
+
+        // When & Then
+        mockMvc.perform(get("/shop/" + shopId + "/totalSalaries")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        verify(shopService, times(1)).sumCashierWorkersSalaries(shopId);
     }
 
     @Test

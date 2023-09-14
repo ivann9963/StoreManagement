@@ -33,7 +33,7 @@ public class Shop {
     @JoinTable(name = "shop_cashierWorkers",
             joinColumns = @JoinColumn(name = "shopId"),
             inverseJoinColumns = @JoinColumn(name = "cashierWorkerId"))
-    private List<CashierWorker> cashierWorkers;
+    private List<CashierWorker> cashierWorkers = new ArrayList<>();
 
     @OneToMany(/*mappedBy = "shop",*/ cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinTable(name = "shop_goods",

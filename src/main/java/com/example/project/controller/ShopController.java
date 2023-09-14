@@ -41,6 +41,9 @@ public class ShopController {
         shopService.deleteShopById(shopId);
     }
 
+    @GetMapping("/{shopId}/totalSalaries")
+    public void sumCashierWorkersSalaries(@PathVariable Long shopId) throws Exception { shopService.sumCashierWorkersSalaries(shopId); }
+
     @PostMapping("/{shopId}/cashier/{cashierId}")
     public void addCashier(@PathVariable Long shopId, @PathVariable Long cashierId) throws Exception { shopService.addCashier(shopId, cashierId);}
 
@@ -49,4 +52,6 @@ public class ShopController {
 
     @PostMapping("/{shopId}/receipt/{receiptId}")
     public void addReceipt(@PathVariable Long shopId, @PathVariable Long receiptId) throws Exception { shopService.addReceipt(shopId, receiptId); }
+    @PostMapping("/{shopId}/cashierWorker/{cashierWorkerId}")
+    public void addCashierWorker(@PathVariable Long shopId, @PathVariable Long cashierWorkerId) throws Exception { shopService.addCashierWorker(shopId, cashierWorkerId); }
 }
