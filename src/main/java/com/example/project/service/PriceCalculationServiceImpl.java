@@ -18,7 +18,7 @@ public class PriceCalculationServiceImpl {
         LocalDate expirationDate = goods.getExpirationDate();
 
         // Calculate markup percentage based on category and expiration date
-        Double markupPercentage = determineMarkupPercentage(category, expirationDate, shop.getStartingFoodPercentage(), shop.getStartingFoodPercentage(), shop.getPercentageIncreaseBefore7Days());
+        Double markupPercentage = determineMarkupPercentage(category, expirationDate, shop.getStartingFoodPercentage(), shop.getStartingNonFoodPercentage(), shop.getPercentageIncreaseBefore7Days());
 
         // Apply markup percentage to base price
         Double markupAmount = basePrice * markupPercentage;
