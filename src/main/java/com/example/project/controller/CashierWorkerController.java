@@ -24,12 +24,12 @@ public class CashierWorkerController {
     @ResponseStatus(HttpStatus.CREATED)
     public void addCashier(@RequestBody CashierWorker cashierWorker) { cashierWorkerService.saveCashierWorker(cashierWorker)  ; }
 
-    @GetMapping("/{cashierId}")
+    @GetMapping("/{cashierWorkerId}")
     @ResponseStatus(HttpStatus.CREATED)
-    public Optional<CashierWorker> getCashierById(@PathVariable UUID cashierWorkerId) { return cashierWorkerService.getCashierWorkerById(cashierWorkerId); }
+    public Optional<CashierWorker> getCashierById(@PathVariable Long cashierWorkerId) { return cashierWorkerService.getCashierWorkerById(cashierWorkerId); }
 
-    @DeleteMapping("/{cashierId}")
-    public void deleteCashier(@PathVariable UUID cashierWorkerId) {
+    @DeleteMapping("/{cashierWorkerId}")
+    public void deleteCashier(@PathVariable Long cashierWorkerId) {
         cashierWorkerService.deleteCashierWorkerById(cashierWorkerId);
     }
 }

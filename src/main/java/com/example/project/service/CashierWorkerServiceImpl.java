@@ -24,7 +24,7 @@ public class CashierWorkerServiceImpl implements CashierWorkerService {
     }
 
     @Override
-    public Optional<CashierWorker> getCashierWorkerById(UUID cashierWorkerId) {
+    public Optional<CashierWorker> getCashierWorkerById(Long cashierWorkerId) {
         return cashierWorkerRepository.findById(cashierWorkerId);
     }
 
@@ -44,7 +44,7 @@ public class CashierWorkerServiceImpl implements CashierWorkerService {
     }
 
     @Override
-    public void deleteCashierWorkerById(UUID cashierId) {
+    public void deleteCashierWorkerById(Long cashierId) {
         cashierWorkerRepository.deleteById(cashierId);
     }
 }

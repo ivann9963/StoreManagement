@@ -8,9 +8,9 @@ import java.util.UUID;
 
 public interface CashierService {
     Iterable<Cashier> getAllCashiers();
-    Optional<Cashier> getCashierById(UUID cashierId);
+    Optional<Cashier> getCashierById(Long cashierId);
     Cashier saveCashier(Cashier cashierWorker);
     Iterable<Cashier> saveAllCashiers(Iterable<Cashier> cashiers);
     void deleteCashier(Cashier cashierWorker);
-    void deleteCashierById(UUID cashierId);
+    void deleteCashierById(Long cashierId);
 }

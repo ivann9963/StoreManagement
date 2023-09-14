@@ -26,10 +26,10 @@ public class GoodsController {
 
     @GetMapping("/{goodsId}")
     @ResponseStatus(HttpStatus.CREATED)
-    public Optional<Goods> getGoodsById(@PathVariable UUID goodsId) { return goodsService.getGoodsById(goodsId); }
+    public Optional<Goods> getGoodsById(@PathVariable Long goodsId) { return goodsService.getGoodsById(goodsId); }
 
     @DeleteMapping("/{goodsId}")
-    public void deleteGoodsById(@PathVariable Goods goods) {
-        goodsService.deleteGoods(goods);
+    public void deleteGoodsById(@PathVariable Long goodsId) {
+        goodsService.deleteGoodsById(goodsId);
     }
 }

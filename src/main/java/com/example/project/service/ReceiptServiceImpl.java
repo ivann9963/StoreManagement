@@ -24,7 +24,7 @@ public class ReceiptServiceImpl implements ReceiptService {
     }
 
     @Override
-    public Optional<Receipt> getReceiptById(UUID receiptId) {
+    public Optional<Receipt> getReceiptById(Long receiptId) {
         return receiptRepository.findById(receiptId);
     }
 
@@ -44,7 +44,7 @@ public class ReceiptServiceImpl implements ReceiptService {
     }
 
     @Override
-    public void deleteReceiptById(UUID receiptId) {
+    public void deleteReceiptById(Long receiptId) {
         receiptRepository.deleteById(receiptId);
     }
 }

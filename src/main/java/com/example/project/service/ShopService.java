@@ -10,14 +10,14 @@ import java.util.UUID;
 
 public interface ShopService {
     Iterable<Shop> getAllShops();
-    Optional<Shop> getShopById(UUID shopId);
+    Optional<Shop> getShopById(Long shopId);
     Shop saveShop(Shop shop);
     Iterable<Shop> saveAllShops(Iterable<Shop> shops);
     void deleteShop(Shop shop);
-    void deleteShopById(UUID shopId);
+    void deleteShopById(Long shopId);
 
-    void addCashier(UUID shopId, UUID cashierId) throws Exception;
-    void addGoods(UUID shopId, UUID goodsId) throws Exception;
+    void addCashier(Long shopId, Long cashierId) throws Exception;
+    void addGoods(Long shopId, Long goodsId) throws Exception;
 
-    void addReceipt(UUID shopId, UUID receiptId) throws Exception;
+    void addReceipt(Long shopId, Long receiptId) throws Exception;
 }

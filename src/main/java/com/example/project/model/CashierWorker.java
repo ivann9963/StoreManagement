@@ -23,9 +23,9 @@ import java.util.UUID;
 public class CashierWorker {
 
     @Id
-    @GeneratedValue
-    @Column(columnDefinition = "uuid", updatable = false)
-    private UUID cashierWorkerId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(updatable = false)
+    private Long cashierWorkerId;
 
     //@Column(nullable = false)
     private String name;

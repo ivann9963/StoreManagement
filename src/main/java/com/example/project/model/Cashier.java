@@ -19,9 +19,9 @@ import java.util.UUID;
 @AllArgsConstructor
 public class Cashier {
     @Id
-    @GeneratedValue
-    @Column(columnDefinition = "uuid", updatable = false)
-    private UUID cashierId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(updatable = false)
+    private Long cashierId;
 
     @OneToOne(fetch = FetchType.EAGER)
     private CashierWorker cashierWorker;

@@ -9,7 +9,7 @@ public interface GoodsService {
 
     Iterable<Goods> getAllGoods();
 
-    Optional<Goods> getGoodsById(UUID goodsId);
+    Optional<Goods> getGoodsById(Long goodsId);
 
     Goods saveGoods(Goods goods);
 
@@ -17,6 +17,6 @@ public interface GoodsService {
 
     void deleteGoods(Goods goods);
 
-    void deleteGoodsById(UUID goodsId);
+    void deleteGoodsById(Long goodsId);
 
 }

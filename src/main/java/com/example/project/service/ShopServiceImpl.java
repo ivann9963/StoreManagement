@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 public class ShopServiceImpl implements ShopService {
@@ -41,7 +40,7 @@ public class ShopServiceImpl implements ShopService {
     }
 
     @Override
-    public Optional<Shop> getShopById(UUID shopId) {
+    public Optional<Shop> getShopById(Long shopId) {
         return shopRepository.findById(shopId);
     }
 
@@ -61,12 +60,12 @@ public class ShopServiceImpl implements ShopService {
     }
 
     @Override
-    public void deleteShopById(UUID shopId) {
+    public void deleteShopById(Long shopId) {
         shopRepository.deleteById(shopId);
     }
 
     @Override
-    public void addCashier(UUID shopId, UUID cashierId) throws Exception {
+    public void addCashier(Long shopId, Long cashierId) throws Exception {
         try{
             Shop existingShop = shopRepository.findById(shopId).get();
             Cashier cashier = cashierRepository.findById(cashierId).get();
@@ -86,7 +85,7 @@ public class ShopServiceImpl implements ShopService {
     }
 
     @Override
-    public void addGoods(UUID shopId, UUID goodsId) throws Exception {
+    public void addGoods(Long shopId, Long goodsId) throws Exception {
         try{
             Shop existingShop = shopRepository.findById(shopId).get();
             Goods goods = goodsRepository.findById(goodsId).get();
@@ -105,7 +104,7 @@ public class ShopServiceImpl implements ShopService {
     }
 
     @Override
-    public void addReceipt(UUID shopId, UUID receiptId) throws Exception {
+    public void addReceipt(Long shopId, Long receiptId) throws Exception {
         try{
             Shop existingShop = shopRepository.findById(shopId).get();
             Receipt receipt = receiptRepository.findById(receiptId).get();

@@ -20,9 +20,9 @@ import java.util.UUID;
 public class Receipt {
 
     @Id
-    @GeneratedValue
-    @Column(columnDefinition = "uuid", updatable = false)
-    private UUID receiptId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(updatable = false)
+    private Long receiptId;
 
     @ManyToOne
     @JoinColumn(name = "goodsId")

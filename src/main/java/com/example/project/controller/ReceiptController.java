@@ -28,12 +28,12 @@ public class ReceiptController {
     }
 
     @GetMapping("/{receiptId}")
-    public Optional<Receipt> getReceiptById(@PathVariable UUID receiptId) {
+    public Optional<Receipt> getReceiptById(@PathVariable Long receiptId) {
         return receiptService.getReceiptById(receiptId);
     }
 
     @DeleteMapping("/{receiptId}")
-    public void deleteReceiptById(@PathVariable UUID receiptId) {
+    public void deleteReceiptById(@PathVariable Long receiptId) {
         receiptService.deleteReceiptById(receiptId);
     }
 }

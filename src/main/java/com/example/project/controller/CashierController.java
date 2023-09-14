@@ -28,11 +28,11 @@ public class CashierController {
 
     @GetMapping("/{cashierId}")
     @ResponseStatus(HttpStatus.CREATED)
-    public Optional<Cashier> getGoodsById(@PathVariable UUID goodsId) { return cashierService.getCashierById(goodsId); }
+    public Optional<Cashier> getCashierById(@PathVariable Long cashierId) { return cashierService.getCashierById(cashierId); }
 
     @DeleteMapping("/{cashierId}")
-    public void deleteGoodsById(@PathVariable Cashier goods) {
-        cashierService.deleteCashier(goods);
+    public void deleteCashierById(@PathVariable Long cashierId) {
+        cashierService.deleteCashierById(cashierId);
     }
 }
 

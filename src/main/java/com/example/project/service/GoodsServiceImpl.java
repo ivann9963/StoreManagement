@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 public class GoodsServiceImpl implements GoodsService {
@@ -25,7 +24,7 @@ public class GoodsServiceImpl implements GoodsService {
     }
 
     @Override
-    public Optional<Goods> getGoodsById(UUID goodsId) {
+    public Optional<Goods> getGoodsById(Long goodsId) {
         return goodsRepository.findById(goodsId);
     }
 
@@ -45,7 +44,7 @@ public class GoodsServiceImpl implements GoodsService {
     }
 
     @Override
-    public void deleteGoodsById(UUID goodsId) {
+    public void deleteGoodsById(Long goodsId) {
         goodsRepository.deleteById(goodsId);
     }
 
