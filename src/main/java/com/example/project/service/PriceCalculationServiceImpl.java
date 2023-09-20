@@ -5,20 +5,19 @@ import com.example.project.model.Goods;
 import com.example.project.model.Shop;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 
 @Service
 public class PriceCalculationServiceImpl {
 
-    public void calculatePrice(Shop shop, Goods goods) {
+    public void calculatePrice(Shop shop, Goods goods, LocalDate currentDate) {
         Double basePrice = goods.getBasePrice();
         Category category = goods.getCategory();
         LocalDate expirationDate = goods.getExpirationDate();
 
         // Calculate markup percentage based on category and expiration date
-        Double markupPercentage = determineMarkupPercentage(category, expirationDate, shop.getStartingFoodPercentage(), shop.getStartingNonFoodPercentage(), shop.getPercentageIncreaseBefore7Days());
+        Double markupPercentage = determineMarkupPercentage(category, expirationDate, shop.getStartingFoodPercentage(), shop.getStartingNonFoodPercentage(), shop.getPercentageIncreaseBefore7Days(), currentDate);
 
         // Apply markup percentage to base price
         Double markupAmount = basePrice * markupPercentage;
@@ -26,8 +25,7 @@ public class PriceCalculationServiceImpl {
         goods.setActualPrice(basePrice + markupAmount);
     }
 
-    private Double determineMarkupPercentage(Category category, LocalDate expirationDate,
-                                             Double startingFoodPercentage, Double startingNonFoodPercentage, Double percentageIncreaseBefore7Days) {
+    private Double determineMarkupPercentage(Category category, LocalDate expirationDate, Double startingFoodPercentage, Double startingNonFoodPercentage, Double percentageIncreaseBefore7Days, LocalDate currentDate) {
         Double markupPercentage = 0.0;
 
         // Step 1: Determine base markup percentage based on category
@@ -39,7 +37,7 @@ public class PriceCalculationServiceImpl {
 
         // Step 2: Determine additional markup percentage based on expiration date
         if (expirationDate != null) {
-            long daysUntilExpiration = ChronoUnit.DAYS.between(LocalDate.now(), expirationDate);
+            long daysUntilExpiration = ChronoUnit.DAYS.between(currentDate, expirationDate);
 
             // Calculate additional markup based on days until expiration
             if (daysUntilExpiration <= 7) {
@@ -53,6 +51,4 @@ public class PriceCalculationServiceImpl {
 
         return markupPercentage / 100.0; // Convert to decimal (e.g., 0.05 for 5%)
     }
-
-
 }

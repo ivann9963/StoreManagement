@@ -3,7 +3,9 @@ package com.example.project.service;
 import com.example.project.model.Receipt;
 import com.example.project.model.Shop;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.OptionalInt;
 
 public interface ShopService {
     Iterable<Shop> getAllShops();
@@ -16,6 +18,8 @@ public interface ShopService {
     void addGoods(Long shopId, Long goodsId) throws Exception;
     void addReceipt(Long shopId, Long receiptId) throws Exception;
     void addCashierWorker(Long shopId, Long cashierWorkerId) throws Exception;
+    List<Receipt> getAllReceipts(Long shopId) throws Exception;
     double sumCashierWorkersSalaries(Long shopId) throws Exception;
-    Receipt makeSale(Long shopId, Long cashierWorkerId, Long goodsId, int quantity);
+    Receipt makeSale(Long shopId, Long cashierWorkerId, List<Long> goodsId, List<Integer> quantity);
+    void saveReceiptToFile(Receipt receipt);
 }

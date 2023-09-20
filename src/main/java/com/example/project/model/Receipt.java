@@ -7,6 +7,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -24,12 +28,16 @@ public class Receipt {
     @Column(updatable = false)
     private Long receiptId;
 
-    @ManyToOne
-    @JoinColumn(name = "goodsId")
-    private Goods goods;
+    @ManyToMany
+    @JoinTable(
+            name = "receipt_goods",
+            joinColumns = @JoinColumn(name = "receipt_id"),
+            inverseJoinColumns = @JoinColumn(name = "goods_id")
+    )
+    private List<Goods> goods = new ArrayList<>();
 
     //@Column(nullable = false)
-    private int quantity;
+    private List<Integer> quantity;
 
     //@Column(nullable = false)
     private double totalPrice;
@@ -37,6 +45,8 @@ public class Receipt {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "cashierId")
     private CashierWorker cashierWorker;
+
+    private LocalDateTime date;
 
     /**
      * TO-DO: check if i can change this name to anything

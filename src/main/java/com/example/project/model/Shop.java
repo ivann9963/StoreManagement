@@ -29,31 +29,31 @@ public class Shop {
 
     private String name;
 
-    @OneToMany(/*mappedBy = "shop",*/ cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinTable(name = "shop_cashierWorkers",
             joinColumns = @JoinColumn(name = "shopId"),
             inverseJoinColumns = @JoinColumn(name = "cashierWorkerId"))
     private List<CashierWorker> cashierWorkers = new ArrayList<>();
 
-    @OneToMany(/*mappedBy = "shop",*/ cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinTable(name = "shop_goods",
             joinColumns = @JoinColumn(name = "shopId"),
             inverseJoinColumns = @JoinColumn(name = "goodsId"))
     private List<Goods> goods = new ArrayList<>();
 
-    @OneToMany(/*mappedBy = "shop",*/ cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinTable(name = "shop_receipts",
             joinColumns = @JoinColumn(name = "shopId"),
             inverseJoinColumns = @JoinColumn(name = "receiptId"))
     private List<Receipt> receipts = new ArrayList<>();
 
-    @OneToMany(/*mappedBy = "shop",*/ cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinTable(name = "shop_soldGoods",
             joinColumns = @JoinColumn(name = "shopId"),
             inverseJoinColumns = @JoinColumn(name = "goodsId"))
     private List<Goods> soldGoods = new ArrayList<>();
 
-    @OneToMany(/*mappedBy = "shop",*/ cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinTable(name = "shop_cashiers",
             joinColumns = @JoinColumn(name = "shopId"),
             inverseJoinColumns = @JoinColumn(name = "cashierId"))

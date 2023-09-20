@@ -13,6 +13,7 @@ public class PriceCalculationServiceTest {
 
     private PriceCalculationServiceImpl priceCalculationService;
     private Shop shop;
+    private LocalDate currentDate;
 
     @BeforeEach
     public void setup() {
@@ -21,6 +22,7 @@ public class PriceCalculationServiceTest {
         shop.setStartingFoodPercentage(10.0);
         shop.setStartingNonFoodPercentage(5.0);
         shop.setPercentageIncreaseBefore7Days(2.0);
+        currentDate = LocalDate.now(); // Set the current date here for testing
     }
 
     @Test
@@ -28,9 +30,9 @@ public class PriceCalculationServiceTest {
         Goods goods = new Goods();
         goods.setBasePrice(100.0);
         goods.setCategory(Category.FOODGOODS);
-        goods.setExpirationDate(LocalDate.now().plusDays(3)); // 3 days from now
+        goods.setExpirationDate(currentDate.plusDays(3)); // 3 days from now
 
-        priceCalculationService.calculatePrice(shop, goods);
+        priceCalculationService.calculatePrice(shop, goods, currentDate);
 
         assertEquals(116.0, goods.getActualPrice()); // Base + 10% + 2% * 3 days
     }
@@ -40,9 +42,9 @@ public class PriceCalculationServiceTest {
         Goods goods = new Goods();
         goods.setBasePrice(100.0);
         goods.setCategory(Category.FOODGOODS);
-        goods.setExpirationDate(LocalDate.now().plusDays(10)); // 10 days from now
+        goods.setExpirationDate(currentDate.plusDays(10)); // 10 days from now
 
-        priceCalculationService.calculatePrice(shop, goods);
+        priceCalculationService.calculatePrice(shop, goods, currentDate);
 
         assertEquals(110.0, goods.getActualPrice()); // Base + 10%
     }
@@ -52,9 +54,9 @@ public class PriceCalculationServiceTest {
         Goods goods = new Goods();
         goods.setBasePrice(100.0);
         goods.setCategory(Category.NONFOODGOODS);
-        goods.setExpirationDate(LocalDate.now().plusDays(5)); // 5 days from now
+        goods.setExpirationDate(currentDate.plusDays(5)); // 5 days from now
 
-        priceCalculationService.calculatePrice(shop, goods);
+        priceCalculationService.calculatePrice(shop, goods, currentDate);
 
         assertEquals(115.0, goods.getActualPrice()); // Base + 5% + 2% * 5 days
     }
@@ -65,7 +67,7 @@ public class PriceCalculationServiceTest {
         goods.setBasePrice(100.0);
         goods.setCategory(Category.NONFOODGOODS);
 
-        priceCalculationService.calculatePrice(shop, goods);
+        priceCalculationService.calculatePrice(shop, goods, currentDate);
 
         assertEquals(105.0, goods.getActualPrice()); // Base + 5%
     }
