@@ -11,6 +11,8 @@ import com.example.project.repository.GoodsRepository;
 import com.example.project.repository.ReceiptRepository;
 import com.example.project.repository.ShopRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
@@ -49,6 +51,8 @@ public class ShopServiceImpl implements ShopService {
         this.goodsRepository = goodsRepository;
         this.receiptRepository = receiptRepository;
         this.cashierWorkerRepository = cashierWorkerRepository;
+        objectMapper.registerModule(new JavaTimeModule());
+        objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
     }
 
     @Override
@@ -231,6 +235,17 @@ public class ShopServiceImpl implements ShopService {
             objectMapper.writeValue(file, receipt);
         } catch (IOException e) {
             throw new RuntimeException("Error saving receipt to file", e);
+        }
+    }
+
+    @Override
+    public Receipt readReceiptFromFile(String fileName) {
+        File file = new File(fileName);
+
+        try {
+            return objectMapper.readValue(file, Receipt.class);
+        } catch (IOException e) {
+            throw new RuntimeException("Error reading receipt from file", e);
         }
     }
 

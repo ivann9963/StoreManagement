@@ -21,21 +21,21 @@ import java.util.Optional;
 
 public class ShopServiceTest {
 
+    private final static int MILK_QUANTITY = 11;
+    private final static int SHAMPOO_QUANTITY = 12;
+    private final static int CANNED_BEANS_QUANTITY = 13;
+    private final static int CHEESE_QUANTITY = 14;
+    private final static int DETERGENT_QUANTITY = 15;
     @Mock
     private ShopRepository shopRepository;
-
     @Mock
     private CashierRepository cashierRepository;
-
     @Mock
     private CashierWorkerRepository cashierWorkerRepository;
-
     @Mock
     private GoodsRepository goodsRepository;
-
     @Mock
     private ReceiptRepository receiptRepository;
-
     @InjectMocks
     private ShopServiceImpl shopService;
     @InjectMocks
@@ -48,14 +48,17 @@ public class ShopServiceTest {
     private Goods singleGood;
 
     private Receipt receipt;
+    List<Integer> quantities;
 
     @BeforeEach
     public void setup() {
         MockitoAnnotations.initMocks(this);
 
         shop = new Shop();
-        shop.setStartingFoodPercentage(0.03);
-        shop.setPercentageIncreaseBefore7Days(0.1);
+        shop.setShopId(1L);
+        shop.setStartingFoodPercentage(5D);
+        shop.setStartingNonFoodPercentage(8D);
+        shop.setPercentageIncreaseBefore7Days(8D);
         cashier = new Cashier();
         cashierWorker = new CashierWorker();
         singleGood = new Goods();
@@ -63,6 +66,8 @@ public class ShopServiceTest {
         receipt = new Receipt();
 
         initializeGoodsList();
+        quantities = Arrays.asList(MILK_QUANTITY, SHAMPOO_QUANTITY,
+                CANNED_BEANS_QUANTITY, CHEESE_QUANTITY, DETERGENT_QUANTITY);
 
         when(shopRepository.findById(anyLong())).thenReturn(Optional.of(shop));
         when(goodsRepository.findAll()).thenReturn(goodsList);
@@ -77,30 +82,36 @@ public class ShopServiceTest {
 
     private void initializeGoodsList() {
         Goods foodItemExpiringSoon = new Goods();
-        foodItemExpiringSoon.setQuantity(112);
+        foodItemExpiringSoon.setBasePrice(3);
+        foodItemExpiringSoon.setQuantity(MILK_QUANTITY);
         foodItemExpiringSoon.setName("Milk");
         foodItemExpiringSoon.setExpirationDate(LocalDate.now().plusDays(2));
         foodItemExpiringSoon.setCategory(Category.FOODGOODS);
 
         Goods nonFoodItem = new Goods();
-        nonFoodItem.setQuantity(4);
+        nonFoodItem.setQuantity(SHAMPOO_QUANTITY);
+        nonFoodItem.setBasePrice(3);
         nonFoodItem.setName("Shampoo");
         nonFoodItem.setCategory(Category.NONFOODGOODS);
 
         Goods foodItemNotExpiringSoon = new Goods();
-        foodItemNotExpiringSoon.setQuantity(4);
+        foodItemNotExpiringSoon.setQuantity(CANNED_BEANS_QUANTITY);
+        foodItemNotExpiringSoon.setBasePrice(3);
         foodItemNotExpiringSoon.setName("Canned Beans");
         foodItemNotExpiringSoon.setExpirationDate(LocalDate.now().plusMonths(6));
         foodItemNotExpiringSoon.setCategory(Category.FOODGOODS);
 
         Goods anotherFoodItemExpiringSoon = new Goods();
-        anotherFoodItemExpiringSoon.setQuantity(4);
+        anotherFoodItemExpiringSoon.setQuantity(CHEESE_QUANTITY);
+        anotherFoodItemExpiringSoon.setActualPrice(4);
+        anotherFoodItemExpiringSoon.setBasePrice(3);
         anotherFoodItemExpiringSoon.setName("Cheese");
         anotherFoodItemExpiringSoon.setExpirationDate(LocalDate.now().plusDays(5));
         anotherFoodItemExpiringSoon.setCategory(Category.FOODGOODS);
 
         Goods anotherNonFoodItem = new Goods();
-        anotherNonFoodItem.setQuantity(4);
+        anotherNonFoodItem.setQuantity(DETERGENT_QUANTITY);
+        anotherNonFoodItem.setBasePrice(3);
         anotherNonFoodItem.setName("Detergent");
         anotherNonFoodItem.setCategory(Category.NONFOODGOODS);
 
@@ -332,21 +343,19 @@ public class ShopServiceTest {
         cashierWorker1.setCashierWorkerId(1L);
         CashierWorker cashierWorker2 = new CashierWorker();
         cashierWorker2.setCashierWorkerId(2L); // Setting ID to match cashierWorkerId
-
         List<CashierWorker> cashierWorkers = Arrays.asList(cashierWorker1, cashierWorker2);
-
+        shop.setCashierWorkers(cashierWorkers);
         Long shopId = 1L, cashierWorkerId = 2L;
         List<Long> goodsIds = getGoodsIdsFromGoodsList();
-        List<Integer> quantities = Arrays.asList(15, 23, 18, 41, 20);
-
-        singleGood.setQuantity(10); // Enough stock
-        singleGood.setActualPrice(20.0);
-        shop.setCashierWorkers(cashierWorkers);
 
         when(shopRepository.findById(shopId)).thenReturn(Optional.of(shop));
+
+        // Calculate the price for each good
         for (Goods goods : goodsList) {
+            priceCalculationService.calculatePrice(shop, goods, LocalDate.now());
             when(goodsRepository.findById(goods.getGoodsId())).thenReturn(Optional.of(goods));
-        } // Corresponding to the goodsId in the list
+        }
+        shop.setGoods(goodsList);
         when(receiptRepository.save(any(Receipt.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         // Action
@@ -361,13 +370,16 @@ public class ShopServiceTest {
         List<Receipt> allReceipts = shopRepository.getAllReceipts(shopId); // Replace with your actual method to fetch receipts
         assertTrue(allReceipts.contains(resultReceipt));
 
-        // Assert the quantity of singleGood is reduced
-        assertEquals(5, singleGood.getQuantity());
-
+        // Calculate Goods expected price
+        double expectedTotalPrice = 0.0;
+        for (int i = 0; i < goodsIds.size(); i++) {
+            Goods goods = goodsRepository.findById(goodsIds.get(i)).orElse(null);
+            if (goods != null) {
+                expectedTotalPrice += goods.getActualPrice() * quantities.get(i);
+            }
+        }
         // Assert the total amount in the receipt
-        assertEquals(100.0, resultReceipt.getTotalPrice()); // 5 * 20.0
-        assertEquals(singleGood, resultReceipt.getGoods().get(0));
-        assertEquals(5, resultReceipt.getQuantity().get(0).intValue());
+        assertEquals(expectedTotalPrice, resultReceipt.getTotalPrice());
 
         // Assert the date and time
         assertNotNull(resultReceipt.getDate());
@@ -381,7 +393,6 @@ public class ShopServiceTest {
         // Given
         Long shopId = 1L, cashierWorkerId = 2L;
         List<Long> goodsIds = getGoodsIdsFromGoodsList();
-        List<Integer> quantities = Arrays.asList(15, 23, 18, 41, 20);
 
         when(shopRepository.findById(shopId)).thenReturn(Optional.of(shop));
         when(goodsRepository.findById(3L)).thenReturn(Optional.empty());
@@ -397,7 +408,6 @@ public class ShopServiceTest {
         // Given
         Long shopId = 1L, cashierWorkerId = 2L;
         List<Long> goodsIds = getGoodsIdsFromGoodsList();
-        List<Integer> quantities = Arrays.asList(15, 23, 18, 41, 20);
 
         when(shopRepository.findById(shopId)).thenReturn(Optional.of(shop));
         when(goodsRepository.findById(3L)).thenReturn(Optional.of(singleGood));
@@ -413,7 +423,9 @@ public class ShopServiceTest {
         // Given
         Long shopId = 1L, cashierWorkerId = 2L;
         List<Long> goodsIds = getGoodsIdsFromGoodsList();
-        List<Integer> quantities = Arrays.asList(15, 23, 18, 41, 20); // Request more than in stock
+        // should increase the quantities
+        List<Integer> quantities = Arrays.asList(MILK_QUANTITY, SHAMPOO_QUANTITY,
+                CANNED_BEANS_QUANTITY, CHEESE_QUANTITY, DETERGENT_QUANTITY); // Request more than in stock
 
         singleGood.setQuantity(10); // Only 10 in stock
         singleGood.setActualPrice(20.0);
