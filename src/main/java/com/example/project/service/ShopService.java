@@ -20,6 +20,6 @@ public interface ShopService {
     List<Receipt> getAllReceipts(Long shopId) throws Exception;
     double sumCashierWorkersSalaries(Long shopId) throws Exception;
     Receipt makeSale(Long shopId, Long cashierWorkerId, List<Long> goodsId, List<Integer> quantity);
-    void saveReceiptToFile(Receipt receipt);
+    String saveReceiptToFile(Receipt receipt);
     Receipt readReceiptFromFile(String fileName);
 }

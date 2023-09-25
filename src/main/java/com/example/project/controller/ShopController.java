@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
 
+@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/shop")
 public class ShopController {
@@ -51,8 +52,6 @@ public class ShopController {
     public void addReceipt(@PathVariable Long shopId, @PathVariable Long receiptId) throws Exception { shopService.addReceipt(shopId, receiptId); }
     @PostMapping("/{shopId}/cashierWorker/{cashierWorkerId}")
     public void addCashierWorker(@PathVariable Long shopId, @PathVariable Long cashierWorkerId) throws Exception { shopService.addCashierWorker(shopId, cashierWorkerId); }
-
-
 
     @PostMapping("/batch")
     @ResponseStatus(HttpStatus.CREATED)

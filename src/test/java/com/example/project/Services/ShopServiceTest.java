@@ -12,12 +12,18 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+
 
 public class ShopServiceTest {
 
@@ -46,31 +52,92 @@ public class ShopServiceTest {
     private CashierWorker cashierWorker;
     private List<Goods> goodsList;
     private Goods singleGood;
-
     private Receipt receipt;
     List<Integer> quantities;
+    private CashierWorker cashierWorker1;
+    private CashierWorker cashierWorker2;
+
+//    @BeforeEach
+//    public void setup() {
+//        MockitoAnnotations.initMocks(this);
+//
+//        shop = new Shop();
+//        shop.setShopId(1L);
+//        shop.setStartingFoodPercentage(5D);
+//        shop.setStartingNonFoodPercentage(8D);
+//        shop.setPercentageIncreaseBefore7Days(8D);
+//        cashier = new Cashier();
+//        cashierWorker = new CashierWorker();
+//        singleGood = new Goods();
+//        goodsList = new ArrayList<>();
+//        receipt = new Receipt();
+//
+//        initializeGoodsList();
+//        quantities = Arrays.asList(MILK_QUANTITY, SHAMPOO_QUANTITY,
+//                CANNED_BEANS_QUANTITY, CHEESE_QUANTITY, DETERGENT_QUANTITY);
+//
+//        when(shopRepository.findById(anyLong())).thenReturn(Optional.of(shop));
+//        when(goodsRepository.findAll()).thenReturn(goodsList);
+//    }
 
     @BeforeEach
     public void setup() {
         MockitoAnnotations.initMocks(this);
-
+        // Initialize Shop
         shop = new Shop();
         shop.setShopId(1L);
-        shop.setStartingFoodPercentage(5D);
-        shop.setStartingNonFoodPercentage(8D);
-        shop.setPercentageIncreaseBefore7Days(8D);
-        cashier = new Cashier();
+        shop.setName("Test Shop");
+        shop.setStartingFoodPercentage(10.0);
+        shop.setStartingNonFoodPercentage(20.0);
+        shop.setPercentageIncreaseBefore7Days(5.0);
+
+        // Initialize CashierWorker List
+
+        List<CashierWorker> cashierWorkers = new ArrayList<>();
+        cashierWorker1 = new CashierWorker();
+        cashierWorker1.setCashierWorkerId(1L);
+        cashierWorker1.setName("John");
+        cashierWorker1.setMonthlySalary(250);
+        cashierWorkers.add(cashierWorker1);
+
+        cashierWorker2 = new CashierWorker();
+        cashierWorker2.setCashierWorkerId(2L);
+        cashierWorker2.setName("Jane");
+        cashierWorker2.setMonthlySalary(350);
+        cashierWorkers.add(cashierWorker2);
+
         cashierWorker = new CashierWorker();
-        singleGood = new Goods();
-        goodsList = new ArrayList<>();
+        cashierWorker.setCashierWorkerId(3L);
+        cashierWorker.setName("Rick");
+        cashierWorkers.add(cashierWorker);
+
+        shop.setCashierWorkers(cashierWorkers);
+
+        // Initialize receipt
         receipt = new Receipt();
 
+        // Initialize Cashier
+        cashier = new Cashier();
+
+        // Initialize Goods List
+        goodsList = new ArrayList<>();
         initializeGoodsList();
+        shop.setGoods(goodsList);
         quantities = Arrays.asList(MILK_QUANTITY, SHAMPOO_QUANTITY,
                 CANNED_BEANS_QUANTITY, CHEESE_QUANTITY, DETERGENT_QUANTITY);
 
+        // Initialize quantities
+        Map<Long, Integer> quantities = new HashMap<>();
+        quantities.put(1L, 5);
+        quantities.put(2L, 3);
+
+        // Mocking repository and service calls
+        when(shopRepository.findById(1L)).thenReturn(Optional.of(shop));
         when(shopRepository.findById(anyLong())).thenReturn(Optional.of(shop));
         when(goodsRepository.findAll()).thenReturn(goodsList);
+        when(cashierWorkerRepository.findById(1L)).thenReturn(Optional.of(cashierWorker1));
+        when(cashierWorkerRepository.findById(2L)).thenReturn(Optional.of(cashierWorker2));
+        when(receiptRepository.save(any(Receipt.class))).thenAnswer(invocation -> invocation.getArgument(0));
     }
     private List<Long> getGoodsIdsFromGoodsList() {
         List<Long> goodsIds = new ArrayList<>();
@@ -121,7 +188,9 @@ public class ShopServiceTest {
         anotherFoodItemExpiringSoon.setGoodsId(4L);
         anotherNonFoodItem.setGoodsId(5L);
 
-        goodsList = Arrays.asList(foodItemExpiringSoon, nonFoodItem, foodItemNotExpiringSoon, anotherFoodItemExpiringSoon, anotherNonFoodItem);
+        singleGood = new Goods();
+        goodsList = new LinkedList<>(Arrays.asList
+                (foodItemExpiringSoon, nonFoodItem, foodItemNotExpiringSoon, anotherFoodItemExpiringSoon, anotherNonFoodItem));
     }
 
     @Test
@@ -136,7 +205,6 @@ public class ShopServiceTest {
 
     @Test
     public void testGetShopById() {
-        when(shopRepository.findById(1L)).thenReturn(Optional.of(shop));
 
         Optional<Shop> result = shopService.getShopById(1L);
         assertTrue(result.isPresent());
@@ -154,14 +222,10 @@ public class ShopServiceTest {
     @Test
     public void testAddCashier() throws Exception {
         // Given
-        Long shopId = 1L;
         Long cashierId = 1L;
-
-        when(shopRepository.findById(shopId)).thenReturn(Optional.of(shop));
         when(cashierRepository.findById(cashierId)).thenReturn(Optional.of(cashier));
-
         // Action
-        shopService.addCashier(shopId, cashierId);
+        shopService.addCashier(1L, cashierId);
 
         // Then
         assertEquals(cashier.getShop(), shop);
@@ -185,7 +249,6 @@ public class ShopServiceTest {
 
     @Test
     public void testAddCashier_CashierNotFound() {
-        when(shopRepository.findById(1L)).thenReturn(Optional.of(shop));
         when(cashierRepository.findById(1L)).thenReturn(Optional.empty());
 
         assertThrows(Exception.class, () -> {
@@ -199,10 +262,8 @@ public class ShopServiceTest {
     @Test
     public void testAddGoods() throws Exception {
         // Given
-        Long shopId = 1L;
         Long goodsId = 1L;
-
-        when(shopRepository.findById(shopId)).thenReturn(Optional.of(shop));
+        Long shopId = 1L;
         when(goodsRepository.findById(goodsId)).thenReturn(Optional.of(singleGood));
 
         // Action
@@ -250,7 +311,6 @@ public class ShopServiceTest {
 
     @Test
     public void testAddGoods_GoodsNotFound() {
-        when(shopRepository.findById(1L)).thenReturn(Optional.of(shop));
         when(goodsRepository.findById(1L)).thenReturn(Optional.empty());
 
         assertThrows(Exception.class, () -> {
@@ -267,7 +327,6 @@ public class ShopServiceTest {
         Long shopId = 1L;
         Long receiptId = 1L;
 
-        when(shopRepository.findById(shopId)).thenReturn(Optional.of(shop));
         when(receiptRepository.findById(receiptId)).thenReturn(Optional.of(receipt));
 
         // Action
@@ -295,7 +354,6 @@ public class ShopServiceTest {
 
     @Test
     public void testAddReceipt_ReceiptNotFound() {
-        when(shopRepository.findById(1L)).thenReturn(Optional.of(shop));
         when(receiptRepository.findById(1L)).thenReturn(Optional.empty());
 
         assertThrows(Exception.class, () -> {
@@ -308,23 +366,11 @@ public class ShopServiceTest {
 
     @Test
     public void testSumCashierWorkersTotalSalaries() throws Exception {
-        // Given
-        CashierWorker cashierWorker1 = new CashierWorker();
-        cashierWorker1.setMonthlySalary(1000);
-
-        CashierWorker cashierWorker2= new CashierWorker();
-        cashierWorker2.setMonthlySalary(2000);
-
-        Shop shop = new Shop();
-        shop.setCashierWorkers(Arrays.asList(cashierWorker1, cashierWorker2));
-
-        when(shopRepository.findById(1L)).thenReturn(Optional.of(shop));
-
         // When
         double totalSalaries = shopService.sumCashierWorkersSalaries(1L);
 
         // Then
-        assertEquals(3000, totalSalaries);
+        assertEquals(600, totalSalaries);
     }
 
     @Test
@@ -339,16 +385,8 @@ public class ShopServiceTest {
     @Test
     public void testMakeSale_Success() throws Exception {
         // Given
-        CashierWorker cashierWorker1 = new CashierWorker();
-        cashierWorker1.setCashierWorkerId(1L);
-        CashierWorker cashierWorker2 = new CashierWorker();
-        cashierWorker2.setCashierWorkerId(2L); // Setting ID to match cashierWorkerId
-        List<CashierWorker> cashierWorkers = Arrays.asList(cashierWorker1, cashierWorker2);
-        shop.setCashierWorkers(cashierWorkers);
         Long shopId = 1L, cashierWorkerId = 2L;
         List<Long> goodsIds = getGoodsIdsFromGoodsList();
-
-        when(shopRepository.findById(shopId)).thenReturn(Optional.of(shop));
 
         // Calculate the price for each good
         for (Goods goods : goodsList) {
@@ -356,7 +394,6 @@ public class ShopServiceTest {
             when(goodsRepository.findById(goods.getGoodsId())).thenReturn(Optional.of(goods));
         }
         shop.setGoods(goodsList);
-        when(receiptRepository.save(any(Receipt.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         // Action
         Receipt resultReceipt = shopService.makeSale(shopId, cashierWorkerId, goodsIds, quantities);
@@ -394,7 +431,6 @@ public class ShopServiceTest {
         Long shopId = 1L, cashierWorkerId = 2L;
         List<Long> goodsIds = getGoodsIdsFromGoodsList();
 
-        when(shopRepository.findById(shopId)).thenReturn(Optional.of(shop));
         when(goodsRepository.findById(3L)).thenReturn(Optional.empty());
 
         // Action & Assert
@@ -409,7 +445,6 @@ public class ShopServiceTest {
         Long shopId = 1L, cashierWorkerId = 2L;
         List<Long> goodsIds = getGoodsIdsFromGoodsList();
 
-        when(shopRepository.findById(shopId)).thenReturn(Optional.of(shop));
         when(goodsRepository.findById(3L)).thenReturn(Optional.of(singleGood));
 
         // Action & Assert
@@ -424,18 +459,53 @@ public class ShopServiceTest {
         Long shopId = 1L, cashierWorkerId = 2L;
         List<Long> goodsIds = getGoodsIdsFromGoodsList();
         // should increase the quantities
-        List<Integer> quantities = Arrays.asList(MILK_QUANTITY, SHAMPOO_QUANTITY,
-                CANNED_BEANS_QUANTITY, CHEESE_QUANTITY, DETERGENT_QUANTITY); // Request more than in stock
+        List<Integer> RequestedQuantities = Arrays.asList(MILK_QUANTITY, SHAMPOO_QUANTITY,
+                CANNED_BEANS_QUANTITY, CHEESE_QUANTITY+3, DETERGENT_QUANTITY); // Request more than in stock
 
-        singleGood.setQuantity(10); // Only 10 in stock
-        singleGood.setActualPrice(20.0);
-
-        when(shopRepository.findById(shopId)).thenReturn(Optional.of(shop));
-        when(goodsRepository.findById(3L)).thenReturn(Optional.of(singleGood));
+        when(receiptRepository.save(any(Receipt.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        // Calculate the price for each good
+        for (Goods goods : goodsList) {
+            priceCalculationService.calculatePrice(shop, goods, LocalDate.now());
+            when(goodsRepository.findById(goods.getGoodsId())).thenReturn(Optional.of(goods));
+        }
+        shop.setGoods(goodsList);
 
         // Action & Assert
-        assertThrows(RuntimeException.class, () -> {
-            shopService.makeSale(shopId, cashierWorkerId, goodsIds, quantities);
+        Exception exception = assertThrows(RuntimeException.class, () -> {
+            shopService.makeSale(shopId, cashierWorkerId, goodsIds, RequestedQuantities);
         });
+
+        assertTrue(exception.getMessage().contains("Not enough stock for "));
+    }
+
+    @Test
+    public void testSaveAndReadReceiptToFile() {
+        // Create a Receipt object and populate its fields
+        Receipt receipt = new Receipt();
+        receipt.setReceiptId(1L);
+        receipt.setGoods(Arrays.asList(new Goods(), new Goods()));
+        receipt.setQuantity(Arrays.asList(1, 2));
+        receipt.setTotalPrice(100.0);
+        receipt.setCashierWorker(new CashierWorker());
+        receipt.setDate(LocalDateTime.now());
+        receipt.setShop(new Shop());
+
+        // Mock the save behavior
+        when(receiptRepository.save(receipt)).thenReturn(receipt);
+
+        // Save the receipt to a file
+        String fileName = shopService.saveReceiptToFile(receipt);
+
+        // Read the receipt from the file
+        Receipt readReceipt = shopService.readReceiptFromFile(fileName);
+
+        // Assert the fields
+        assertEquals(receipt.getReceiptId(), readReceipt.getReceiptId());
+        assertEquals(receipt.getGoods().size(), readReceipt.getGoods().size());
+        assertEquals(receipt.getQuantity(), readReceipt.getQuantity());
+        assertEquals(receipt.getTotalPrice(), readReceipt.getTotalPrice());
+        assertEquals(receipt.getCashierWorker(), readReceipt.getCashierWorker());
+        assertEquals(receipt.getDate(), readReceipt.getDate());
+        assertEquals(receipt.getShop(), readReceipt.getShop());
     }
 }

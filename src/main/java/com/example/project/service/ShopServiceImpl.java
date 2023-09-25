@@ -98,6 +98,14 @@ public class ShopServiceImpl implements ShopService {
 
     @Override
     public void addGoods(Long shopId, Long goodsId) throws Exception {
+//        Shop shop = fetchShop(shopId);
+//        Goods goods = fetchEntityById(goodsId, goodsRepository, "Goods");
+//
+//        goods.setShop(shop);
+//        goodsRepository.save(goods);
+//        shop.getGoods().add(goods);
+//        shopRepository.save(shop);
+
         Shop shop = fetchShop(shopId);
         Goods goods = fetchEntityById(goodsId, goodsRepository, "Goods");
 
@@ -147,7 +155,6 @@ public class ShopServiceImpl implements ShopService {
     @Override
     public Receipt makeSale(Long shopId, Long cashierWorkerId, List<Long> goodsIds, List<Integer> quantities) {
         validateInputLists(goodsIds, quantities);
-
         Shop shop = fetchShop(shopId);
         CashierWorker cashierWorker = fetchCashierWorker(shop, cashierWorkerId);
         List<Goods> goodsList = fetchGoodsAndUpdateQuantity(goodsIds, quantities, shop);
@@ -224,7 +231,7 @@ public class ShopServiceImpl implements ShopService {
     }
 
     @Override
-    public void saveReceiptToFile(Receipt receipt) {
+    public String saveReceiptToFile(Receipt receipt) {
         totalReceiptsIssued++;
         totalTurnover += receipt.getTotalPrice();
 
@@ -236,6 +243,7 @@ public class ShopServiceImpl implements ShopService {
         } catch (IOException e) {
             throw new RuntimeException("Error saving receipt to file", e);
         }
+        return fileName;
     }
 
     @Override
